@@ -70,6 +70,16 @@ def getSVM(C, kernel, meta):
     if not os.path.exists('img/rbf'):
         os.makedirs('img/rbf')
 
+    # Verificamos si existe la carpeta linear para guardar las imagenes dentro de img
+    # si no existe la creamos
+    if not os.path.exists('img/linear'):
+        os.makedirs('img/linear')
+
+    # Verificamos si existe la carpeta poly para guardar las imagenes dentro de img
+    # si no existe la creamos
+    if not os.path.exists('img/poly'):
+        os.makedirs('img/poly')
+
     # Desplegamos la matriz de confusión
     cm_display.plot()
     plt.title(f"Matriz de Confusión\nC={C}, kernel='{kernel}'\nScore={score:.4f}")
