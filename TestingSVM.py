@@ -103,7 +103,7 @@ y = np.array(heart['HeartDisease'])
 precision_esperada = float(input("Ingrese la precisión esperada: "))
 iteraciones = int(input("Ingrese el número de iteraciones: "))
 
-for i in range(iteraciones):
+for i in range(iteraciones + 1):
     while True:
         C, kernel = get_parameters()
         score = getSVM(C, kernel, precision_esperada)
