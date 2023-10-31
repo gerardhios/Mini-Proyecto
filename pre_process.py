@@ -45,10 +45,11 @@ def process_dataframes(dataframes):
         # Iterate each 256 rows and calculate the mean of each column
         for j in range(iterations):
             # Calculate the start and end of the 256 rows
-            start = i * 256
+            start = j * 256
             end = start + 256
             # Calculate the mean of each column
-            means.append(process_row(df.iloc[start:end].mean(), j, 'MEAN'))
+            mean = df.iloc[start:end].mean()
+            means.append(process_row(mean, j, 'MEAN'))
             # Calculate the standard deviation of each column
             stds.append(process_row(df.iloc[start:end].std(), j, 'STD'))
         mean_dataframe = pd.DataFrame(means)
