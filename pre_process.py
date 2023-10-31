@@ -27,7 +27,6 @@ def process_row(row, iteration:int, label:str):
 
     return row
 
-
 # Function to delete rename and apply changes to the dataframes
 def process_dataframes(dataframes):
     drop_columns = ['Epoch', 'Event Id', 'Event Date', 'Event Duration']
@@ -53,9 +52,13 @@ def process_dataframes(dataframes):
             # Calculate the standard deviation of each column
             stds.append(process_row(df.iloc[start:end].std(), j, 'STD'))
         mean_dataframe = pd.DataFrame(means)
+
         std_dataframe = pd.DataFrame(stds)
         # Concatenate the mean and std dataframes
         new_dataframe = pd.merge(mean_dataframe, std_dataframe, on='Time')
+        # Ignore first seconds of rest 
+        new_dataframe = new_dataframe.iloc[9:]
+
         # Save the new dataframe to a csv file
         path = dataframes[1][i]
         # Check if exist the folder processed in the parent folder of the csv file
