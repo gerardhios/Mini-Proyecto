@@ -5,6 +5,6 @@ columns = ["Time","CH1MEAN","CH2MEAN","CH3MEAN","CH4MEAN","CH5MEAN","CH6MEAN","C
 
 df = pd.read_csv("data/Records/Raw/Processed/2023.10.13-12.18.34.csv", usecols=columns)
 
-plt.plot(df.Time, df.CH1MEAN)
+plt.plot(df.Time, df.CH1MEAN, marker="o")
 
 plt.show()
