@@ -1,5 +1,4 @@
 import pandas as pd
-import numpy as np
 from pathlib import Path
 
 # Function to read all csv files and return a list with file names and dataframes
@@ -33,7 +32,7 @@ def place_classification_column(merge_df):
     column = ['open_hand' for _ in range(20)] + ['rest' for _ in range(20)] + ['close_hand' for _ in range(20)] + ['rest' for _ in range(10)]
     
     # Set the classification column values 
-    merge_df['classification'] = column
+    merge_df['Classification'] = column
     return merge_df
 
 # Function to delete rename and apply changes to the dataframes
@@ -73,7 +72,7 @@ def process_dataframes(dataframes):
         new_dataframe = place_classification_column(new_dataframe)
 
         # Remove all rows with rest in the classification column
-        new_dataframe = new_dataframe[new_dataframe.classification != 'rest']
+        new_dataframe = new_dataframe[new_dataframe.Classification != 'rest']
 
         # Save the new dataframe to a csv file
         path = dataframes[1][i]
@@ -89,7 +88,7 @@ def process_dataframes(dataframes):
         new_merge_df = pd.concat([new_merge_df, new_dataframe], ignore_index=True)
     
     # Change the open_hand and close_hand values to 0 and 1
-    new_merge_df.classification.replace({'open_hand':0, 'close_hand':1}, inplace=True)
+    new_merge_df.Classification.replace({'open_hand':0, 'close_hand':1}, inplace=True)
     # Save the merge dataframe to a csv file
     new_merge_df.to_csv(path.parent / 'Processed' / 'merged.csv', index=False)
 
