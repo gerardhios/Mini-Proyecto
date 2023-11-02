@@ -1,5 +1,49 @@
 import pandas as pd
 from pathlib import Path
+from sklearn.preprocessing import StandardScaler
+
+scaler = StandardScaler()
+
+def calculate_entropy(data, time_scale): 
+    #falta mandar el rango de empiezar y terminar el ciclo 
+    multiplier = 1/time_scale
+    addition_of_x = 0
+
+    for x_data in data:
+        addition_of_x += x_data
+
+    entropy = multiplier * addition_of_x
+    
+    return entropy #se retorna un escalar
+
+def calculate_multiscale_entropy(channel, scale_factor, num_samples): 
+    entropies_multiscale = []
+
+    #Calculamos entropias de diferentes escalas dividiendo los datos en segmentos y calculando la entropia de cada segmento 
+    for i in range(0, num_samples, scale_factor):
+        entropies_multiscale.append(calculate_entropy(channel.iloc[i:i+scale_factor], scale_factor))
+
+    # Drop the last element of the list
+    entropies_multiscale.pop()
+
+    return entropies_multiscale
+
+def get_channels(data):
+    scale_factor = 256
+    num_samples, num_channels = data.shape
+    entropies_multiscale = {}
+    #recorremos los canales para calcular sus entropias 
+    for i in range(0, num_channels):
+        # Get the i column
+        column = data.iloc[:, i]
+        entropies_multiscale[column.name] = calculate_multiscale_entropy(channel=column, scale_factor=scale_factor, num_samples=num_samples)
+
+    # Add the time column based on the scale factor / number of samples
+    entropies_multiscale['Time'] = [i/scale_factor + 1 for i in range(0, num_samples, scale_factor)]
+    entropies_multiscale['Time'].pop()
+
+    return pd.DataFrame(entropies_multiscale)
+
 
 # Function to read all csv files and return a list with file names and dataframes
 def read_csv_files(path:str):
@@ -11,6 +55,15 @@ def read_csv_files(path:str):
     p = Path(path)
     csv_files = list(p.glob('*.csv'))
     return [dfs, csv_files]
+
+def process_dataframe(df, label:str):
+    # Rename the Channel x column to Chxlabel
+    rename = {f'Channel {i}': f'CH{i}{label}' for i in range(1, 15)}
+    # Rename the columns
+    for key, value in rename.items():
+        df[value] = df[key]
+        del df[key]
+    return df
 
 def process_row(row, iteration:int, label:str):
     # Delete the Time column
@@ -64,6 +117,14 @@ def process_dataframes(dataframes):
         std_dataframe = pd.DataFrame(stds)
         # Concatenate the mean and std dataframes
         new_dataframe = pd.merge(mean_dataframe, std_dataframe, on='Time')
+
+        # Get the entropy multiscale of each channel
+        df1 = df.copy()
+        df1.drop(columns=['Time'], inplace=True)
+        multiescale =  process_dataframe(get_channels(pd.DataFrame(scaler.fit_transform(df1), columns=df1.columns)), 'ENTROPY')
+
+        # Concatenate the entropy multiscale dataframe to the new dataframe
+        new_dataframe = pd.merge(new_dataframe, multiescale, on='Time')
 
         # Ignore first seconds of resting state
         new_dataframe = new_dataframe.iloc[10:]

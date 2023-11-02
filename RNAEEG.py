@@ -8,7 +8,7 @@ import numpy
 #from tensorflow.keras import layers
 
 model = Sequential()
-model.add(Dense(20, input_dim=28, activation='relu'))
+model.add(Dense(20, input_dim=42, activation='relu'))
 model.add(Dense(20, activation='relu'))
 model.add(Dense(20, activation='relu'))
 model.add(Dense(1, activation='sigmoid'))
@@ -26,8 +26,8 @@ dataset1 = numpy.loadtxt(pe, delimiter=",")
 
 # DATOS PARA ENTRENAMIENTO 
 # dividido en variables de entrada (X) y salida (Y)
-X = dataset1[:,0:28]
-Y = dataset1[:,28]
+X = dataset1[:,0:42]
+Y = dataset1[:,42]
 
 print(X)
 print(Y)
@@ -37,8 +37,8 @@ pv = Path('data/Records/Raw/Processed/EEG_test.csv')
 dataset2 = numpy.loadtxt(pv, delimiter=",")
 
 # dividido en variables de entrada (W) y salida (Z)
-W = dataset2[:,0:28]
-Z = dataset2[:,28]
+W = dataset2[:,0:42]
+Z = dataset2[:,42]
 print(W)
 print(Z)
 
@@ -47,7 +47,7 @@ model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy']
 
 # Ajusta el modelo
 # SE LE CARGAN LOS DATOS DE ENTRENAMIENTO
-model.fit(X, Y, epochs=200, batch_size=10)
+model.fit(X, Y, epochs=500, batch_size=10)
 
 # VALIDACIÓN
 # test del modelo. con los nuevos datos

@@ -43,7 +43,7 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
 print('Son {} datos para entrenamiento y {} datos para prueba'.format(X_train.shape[0], X_test.shape[0]))
 
 #Modelo de Máquinas de Vectores de Soporte
-algoritmo = SVC(C=1.9, kernel='linear')
+algoritmo = SVC(C=0.85, kernel='linear')
 algoritmo.fit(X_train, y_train)
 Y_pred_SVM = algoritmo.predict(X_test)
 # SVM Precisión entrenamiento
