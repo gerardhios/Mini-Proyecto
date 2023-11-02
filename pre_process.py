@@ -94,7 +94,13 @@ def process_dataframes(dataframes):
     new_merge_df = new_merge_df.sample(frac=1).reset_index(drop=True)
 
     # Save the merge dataframe to a csv file
-    new_merge_df.to_csv(path.parent / 'Processed' / 'merged.csv', index=False)
+    new_merge_df.to_csv(path.parent / 'Processed' / 'EEG.csv', index=False)
+
+    # Save the 20% of the dataframe to a csv file
+    new_merge_df.sample(frac=0.2).to_csv(path.parent / 'Processed' / 'EEG_test.csv', index=False, header=False)
+
+    # Save the 80% of the dataframe to a csv file
+    new_merge_df.sample(frac=0.8).to_csv(path.parent / 'Processed' / 'EEG_train.csv', index=False, header=False)
 
 if __name__ == '__main__':
     # Read all csv files
