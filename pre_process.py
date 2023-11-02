@@ -30,35 +30,16 @@ def process_row(row, iteration:int, label:str):
 def place_classification_column(merge_df): 
 
     # Create classification labels for each row 
-    column = ['open_hand' for _ in range(20)] + ['rest' for _ in range(10)] + ['close_hand' for _ in range(20)] + ['rest' for _ in range(10)]
+    column = ['open_hand' for _ in range(20)] + ['rest' for _ in range(20)] + ['close_hand' for _ in range(20)] + ['rest' for _ in range(10)]
     
     # Set the classification column values 
     merge_df['classification'] = column
     return merge_df
 
-def equal_rows_number(merge_df): 
-    # verify current rows
-    current_rows = len(merge_df)
-    # define desire number of rows
-    desired_rows = 60
-    # Calculate rows to add
-    rows_to_add = desired_rows - current_rows
-
-    # If there is a difference between the desire rows and current rows, go in 
-    if rows_to_add > 0:
-        # create a dataframe with the zeros to add
-        zeros_to_add = pd.DataFrame(0, columns=merge_df.columns, index=range(rows_to_add))
-        # change the time column with the actual time in seconds
-        zeros_to_add['Time'] = range(current_rows + 11, current_rows + rows_to_add + 11)
-        #concat both dataframes
-        merge_df = pd.concat([merge_df,zeros_to_add])
-
-    return merge_df
-
-
 # Function to delete rename and apply changes to the dataframes
 def process_dataframes(dataframes):
     drop_columns = ['Epoch', 'Event Id', 'Event Date', 'Event Duration']
+    new_merge_df = pd.DataFrame()
     for i in range(len(dataframes[0])):
         means = []
         stds = []
@@ -76,8 +57,7 @@ def process_dataframes(dataframes):
             start = j * 256
             end = start + 256
             # Calculate the mean of each column
-            mean = df.iloc[start:end].mean()
-            means.append(process_row(mean, j, 'MEAN'))
+            means.append(process_row(df.iloc[start:end].mean(), j, 'MEAN'))
             # Calculate the standard deviation of each column
             stds.append(process_row(df.iloc[start:end].std(), j, 'STD'))
         mean_dataframe = pd.DataFrame(means)
@@ -88,12 +68,12 @@ def process_dataframes(dataframes):
 
         # Ignore first seconds of resting state
         new_dataframe = new_dataframe.iloc[10:]
-
-        new_dataframe = equal_rows_number(new_dataframe)
         
+        # Add classification column
         new_dataframe = place_classification_column(new_dataframe)
 
-
+        # Remove all rows with rest in the classification column
+        new_dataframe = new_dataframe[new_dataframe.classification != 'rest']
 
         # Save the new dataframe to a csv file
         path = dataframes[1][i]
@@ -103,6 +83,15 @@ def process_dataframes(dataframes):
             Path(path.parent / 'Processed').mkdir()
         # Save the new dataframe to a csv file
         new_dataframe.to_csv(path.parent / 'Processed' / path.name, index=False)
+
+        # Concatenate the new dataframe to the merge dataframe ignoring the Time column and index
+        new_dataframe.drop(columns=['Time'], inplace=True)
+        new_merge_df = pd.concat([new_merge_df, new_dataframe], ignore_index=True)
+    
+    # Change the open_hand and close_hand values to 0 and 1
+    new_merge_df.classification.replace({'open_hand':0, 'close_hand':1}, inplace=True)
+    # Save the merge dataframe to a csv file
+    new_merge_df.to_csv(path.parent / 'Processed' / 'merged.csv', index=False)
 
 if __name__ == '__main__':
     # Read all csv files
