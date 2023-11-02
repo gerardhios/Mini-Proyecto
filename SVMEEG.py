@@ -2,8 +2,8 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-# Get the path of merged csv file
-p = Path('data/Records/Raw/Processed/merged.csv')
+# Get the path of EEG csv file
+p = Path('data/Records/Raw/Processed/EEG.csv')
 
 # carga los datos
 #Importamos el dataset para iniciar el análisis
