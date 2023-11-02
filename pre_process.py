@@ -89,6 +89,10 @@ def process_dataframes(dataframes):
     
     # Change the open_hand and close_hand values to 0 and 1
     new_merge_df.Classification.replace({'open_hand':0, 'close_hand':1}, inplace=True)
+
+    # Shuffle the dataframe
+    new_merge_df = new_merge_df.sample(frac=1).reset_index(drop=True)
+
     # Save the merge dataframe to a csv file
     new_merge_df.to_csv(path.parent / 'Processed' / 'merged.csv', index=False)
 
